@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -117,7 +118,7 @@ public class ZMQIntegrationTest {
   public void testZmqDealer() throws Exception {
     final ZMQ.Context context = ZMQ.context(1);
     final ZMQ.Socket socket = context.socket(ZMQ.DEALER);
-    socket.connect("tcp://" + serverAddress.getHostString() + ":" + serverAddress.getPort());
+    socket.connect("tcp://" + getHostString(serverAddress) + ":" + serverAddress.getPort());
     final ZMsg request = ZMsg.newStringMsg("envelope", "", "hello", "world");
     request.send(socket);
 
@@ -139,7 +140,7 @@ public class ZMQIntegrationTest {
   public void testZmqRouter() throws Exception {
     final ZMQ.Context context = ZMQ.context(1);
     final ZMQ.Socket socket = context.socket(ZMQ.ROUTER);
-    socket.connect("tcp://" + serverAddress.getHostString() + ":" + serverAddress.getPort());
+    socket.connect("tcp://" + getHostString(serverAddress) + ":" + serverAddress.getPort());
 
     final ZMTPMessage request = new ZMTPMessage(
         asList(ZMTPFrame.create("envelope")),
@@ -153,5 +154,21 @@ public class ZMQIntegrationTest {
     assertEquals(ZMsg.newStringMsg(identity, "envelope", "", "hello", "world"), receivedReply);
   }
 
+  private static String getHostString(InetSocketAddress serverAddress) {
+    String hostName;
+    InetAddress address;
+    if ((hostName = serverAddress.getHostName()) != null) {
+      return hostName;
+    } else if ((address = serverAddress.getAddress()) != null) {
+      String addressHostName;
+      if ((addressHostName = address.getHostName()) != null) {
+        return addressHostName;
+      } else {
+        return address.getHostAddress();
+      }
+    } else {
+      return null;
+    }
+  }
 
 }
