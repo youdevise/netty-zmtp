@@ -30,6 +30,7 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
@@ -114,6 +115,7 @@ public class ZMQIntegrationTest {
     }
   }
 
+  @Ignore("hangs")
   @Test
   public void testZmqDealer() throws Exception {
     final ZMQ.Context context = ZMQ.context(1);
